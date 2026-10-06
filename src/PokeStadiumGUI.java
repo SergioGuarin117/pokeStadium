@@ -1,8 +1,12 @@
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
-public class PokeStadiumGUI {
+public class PokeStadiumGUI implements BattleListener {
 
     private JPanel panel1;
     private JPanel panelPokemon2;
@@ -29,14 +33,146 @@ public class PokeStadiumGUI {
 
     private Pokemon pokemon1;
     private Pokemon pokemon2;
+    private Battle batallaActual;
+    private Pokemon atacanteActual;
+    private Pokemon defensorActual;
+    private javax.swing.Timer temporizadorCombate;
 
     private void cargarPokemon1(){
         String nombre = txtNombre1.getText().trim();
         if (nombre.isEmpty()){
             txtLog.append("Escribe el nombre del pokemon 1. \n");
-            return;
+
+        }
+        try {
+            Pokemon cargado = apiClient.consultarPokemon(nombre);
+            mostrarPokemon1(cargado);
+            txtNombre1.setText(cargado.getNombre());
+            txtLog.append("Pokemon 1 cargado: "+ cargado.getNombre()+"\n");
+        }catch (Exception e){
+            txtLog.append("No se pudo cargar el pokemon 1: "+ e.getMessage());
+        }
+
+    }
+
+    private void cargarPokemon2(){
+        String nombre = txtNombre2.getText().trim();
+        if (nombre.isEmpty()){
+            txtLog.append("Escribe el nombre del pokemon 1. \n");
+
+        }
+        try {
+            Pokemon cargado = apiClient.consultarPokemon(nombre);
+            mostrarPokemon2(cargado);
+            txtNombre2.setText(cargado.getNombre());
+            txtLog.append("Pokemon 2 cargado: "+ cargado.getNombre()+"\n");
+        }catch (Exception e){
+            txtLog.append("No se pudo cargar el pokemon 2: "+ e.getMessage());
         }
     }
+
+    private void mostrarPokemon1(Pokemon cargado){
+        this.pokemon1 = cargado;
+        btnCombatir.setEnabled(pokemon1 != null && pokemon2 != null);
+        nombrePoke1.setText(cargado.getNombre());
+        barraVida1.setMaximum(cargado.getHp());
+        barraVida1.setValue(cargado.getHpActual());
+
+
+        estadisticasPoke1.setText(
+                "<html>HP: "+ cargado.getHp()
+                +"<br>Ataque: "+ cargado.getAtaque()
+                +"<br>Defensa: "+ cargado.getDefensa()
+                +"<br>Velocidad: "+ cargado.getVelocidad()
+                +"</html>"
+        );
+
+        try {
+            URL url = new URL(cargado.getSprite());
+            ImageIcon icono = new ImageIcon(url);
+            imagenPoke1.setIcon(icono);
+            imagenPoke1.setText("");
+        }catch (MalformedURLException e){
+            imagenPoke1.setText("Imagen no disponible");
+        }
+
+
+
+    }
+
+    private void mostrarPokemon2(Pokemon cargado){
+        this.pokemon2 = cargado;
+        nombrePoke2.setText(cargado.getNombre());
+        barraVida2.setMaximum(cargado.getHp());
+        barraVida2.setValue(cargado.getHpActual());
+        btnCombatir.setEnabled(pokemon1 != null && pokemon2 != null);
+
+        estadisticasPoke2.setText(
+                "<html>HP: "+ cargado.getHp()
+                        +"<br>Ataque: "+ cargado.getAtaque()
+                        +"<br>Defensa: "+ cargado.getDefensa()
+                        +"<br>Velocidad: "+ cargado.getVelocidad()
+                        +"</html>"
+        );
+
+        try {
+            URL url = new URL(cargado.getSprite());
+            ImageIcon icono = new ImageIcon(url);
+            imagenPoke2.setIcon(icono);
+            imagenPoke2.setText("");
+        }catch (MalformedURLException e){
+            imagenPoke2.setText("Imagen no disponible");
+        }
+
+
+    }
+
+    public void iniciarCombateLento(){
+        txtLog.setText("");
+        btnCombatir.setEnabled(false);
+        batallaActual = new Battle(pokemon1, pokemon2, this);
+        atacanteActual = batallaActual.IniciativaPokemon(pokemon1, pokemon2);
+        defensorActual = (atacanteActual == pokemon1) ? pokemon2 : pokemon1;
+        temporizadorCombate = new javax.swing.Timer(1000, e -> {
+            batallaActual.atacar(atacanteActual, defensorActual);
+
+            if (defensorActual.getHpActual() <= 0) {
+                temporizadorCombate.stop();
+                return;
+            }
+
+            Pokemon temporal = atacanteActual;
+            atacanteActual = defensorActual;
+            defensorActual = temporal;
+        });
+
+        temporizadorCombate.start();
+    }
+
+    private void cargarAleatorio1(){
+        int id = (int) (Math.random()*151)+1;
+        txtNombre1.setText(String.valueOf(id));
+        cargarPokemon1();
+    }
+
+    private void cargarAleatorio2(){
+        int id = (int) (Math.random()*151)+1;
+        txtNombre2.setText(String.valueOf(id));
+        cargarPokemon2();
+    }
+
+    private void actualizarColorVida(JProgressBar barra) {
+        int porcentaje = (int)(100.0 * barra.getValue()/barra.getMaximum());
+
+        if (porcentaje<=15){
+            barra.setForeground(Color.RED);
+        }else if(porcentaje<=59){
+            barra.setForeground(Color.YELLOW);
+        }else {
+            barra.setForeground(Color.GREEN);
+        }
+    }
+
 
 
 
@@ -45,19 +181,43 @@ public class PokeStadiumGUI {
         btnRandom1.setText("Random");
         btnRandom2.setText("Random");
         btnCombatir.setText("¡Combatir!");
+        btnCombatir.setEnabled(false);
         txtLog.setEditable(false);
         btnCargar1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 txtLog.append("Buscando Pokemon 1: " + txtNombre1.getText()+ "\n");
+                cargarPokemon1();
             }
         });
         btnCargar2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 txtLog.append(("Buscando Pokemon 2: "+ txtNombre2.getText()+"\n"));
+                cargarPokemon2();
             }
         });
+
+        btnRandom1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            cargarAleatorio1();
+            }
+        });
+        btnRandom2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            cargarAleatorio2();
+            }
+        });
+        btnCombatir.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                txtLog.setText("");
+                iniciarCombateLento();
+            }
+        });
+
     }
 
 
@@ -66,9 +226,32 @@ public class PokeStadiumGUI {
         JFrame frame = new JFrame("PokeStadiumGUI");
         frame.setContentPane(new PokeStadiumGUI().panel1);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
+        frame.setSize(650,500);
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
+
+    @Override
+    public void enTurno(String atacante, String defensor, int daño, boolean critico, double modificador) {
+        txtLog.append(atacante + " Ataca a" + defensor + " y causa "+ daño + (critico ? " ¡¡Critico!! ": "") + "\n");
+        txtLog.setCaretPosition(txtLog.getDocument().getLength());
+    }
+
+    @Override
+    public void cambioHp(String pokemon, int hpActual) {
+        if (nombrePoke1.getText().equalsIgnoreCase(pokemon)){
+            barraVida1.setValue(hpActual);
+            actualizarColorVida(barraVida1);
+        }else if(nombrePoke2.getText().equalsIgnoreCase(pokemon)){
+            barraVida2.setValue(hpActual);
+            actualizarColorVida(barraVida2);
+        }
+
+    }
+
+    @Override
+    public void finalizarBatalla(String ganador) {
+        txtLog.append("¡"+ganador+" Ha ganado!\n");
+    }
+
 }
-
-

@@ -18,6 +18,13 @@ public class PokeApiClient {
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() == 404){
+            throw new IOException("Pokemon no encontrado");
+        }
+        if (response.statusCode()== 400){
+            throw  new IOException("Error de red: HTTP "+response.statusCode());
+        }
         return response.body();
 
     }
@@ -52,7 +59,7 @@ public class PokeApiClient {
             }
         }
 
-        return new Pokemon(nombre,"",sprite, hp, ataque, defensa, velocidad);
+        return new Pokemon(nombreApi,"",sprite, hp, ataque, defensa, velocidad);
 
     }
 
