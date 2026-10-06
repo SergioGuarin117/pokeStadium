@@ -77,6 +77,9 @@ public class PokeStadiumGUI implements BattleListener {
         nombrePoke1.setText(cargado.getNombre());
         barraVida1.setMaximum(cargado.getHp());
         barraVida1.setValue(cargado.getHpActual());
+        barraVida1.setMaximum(cargado.getHp());
+        barraVida1.setValue(cargado.getHpActual());
+        actualizarColorVida(barraVida1);
 
 
         estadisticasPoke1.setText(
@@ -106,6 +109,9 @@ public class PokeStadiumGUI implements BattleListener {
         barraVida2.setMaximum(cargado.getHp());
         barraVida2.setValue(cargado.getHpActual());
         btnCombatir.setEnabled(pokemon1 != null && pokemon2 != null);
+        barraVida2.setMaximum(cargado.getHp());
+        barraVida2.setValue(cargado.getHpActual());
+        actualizarColorVida(barraVida2);
 
         estadisticasPoke2.setText(
                 "<html>HP: "+ cargado.getHp()
@@ -233,8 +239,12 @@ public class PokeStadiumGUI implements BattleListener {
 
     @Override
     public void enTurno(String atacante, String defensor, int daño, boolean critico, double modificador) {
-        txtLog.append(atacante + " Ataca a" + defensor + " y causa "+ daño + (critico ? " ¡¡Critico!! ": "") + "\n");
-        txtLog.setCaretPosition(txtLog.getDocument().getLength());
+        if (daño == 0){
+            txtLog.append(atacante + " Fallo el ataque!\n");
+        }else {
+            txtLog.append(atacante + " Ataca a" + defensor + " y causa "+ daño + (critico ? " ¡¡Critico!! ": "") + "\n");
+            txtLog.setCaretPosition(txtLog.getDocument().getLength());
+        }
     }
 
     @Override

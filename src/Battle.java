@@ -20,9 +20,19 @@ public class Battle {
     }
 
     public int atacar(Pokemon atacante, Pokemon defensor) {
-        int daño = Math.max(1, atacante.getAtaque() - defensor.getDefensa() / 2);
-        defensor.recibirDaño(daño);
+
+        double randomAtaque = Math.random();
+        double randomDefensa = Math.random();
+
+        double resultado = atacante.getAtaque()* randomAtaque - defensor.getDefensa()*randomDefensa;
+
+        if (resultado<1){
+            listener.enTurno(atacante.getNombre(),defensor.getNombre(),0,false,1.0);
+            return 0;
+        }
+        int daño = (int) resultado;
         listener.enTurno(atacante.getNombre(), defensor.getNombre(), daño, false, 1.0);
+        defensor.recibirDaño(daño);
         listener.cambioHp(defensor.getNombre(), defensor.getHpActual());
 
         if (defensor.getHpActual() <= 0) {
