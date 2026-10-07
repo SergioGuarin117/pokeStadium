@@ -24,3 +24,9 @@ PokeStadiumGUI muestra la interfaz grafica, donde muestra visualmente todos los 
 BattleListener es el que comunica los turnos, los cambio de vida y el ganador.
 
 SwingWorker carga los datos de fondo en segundo plano, todo esto es para evitar que se congele la ventana mientras se hace el llamado de la PokeAPI
+
+<img width="800" height="616" alt="image" src="https://github.com/user-attachments/assets/94a1a143-78b2-499f-93b4-b562978aa0f0" />
+
+<img width="792" height="605" alt="image" src="https://github.com/user-attachments/assets/f07c08bd-e363-4006-9f7b-af87b6e777bd" />
+
+
