@@ -41,23 +41,4 @@ public class Battle {
         }
         return daño;
     }
-
-    public void combatir(){
-        Pokemon atacante = IniciativaPokemon(pokemon1, pokemon2);
-        Pokemon defensor = (pokemon1 == atacante) ? pokemon2:pokemon1;
-
-        while (pokemon1.getHpActual() > 0 && pokemon2.getHpActual()>0) {
-            atacar(atacante, defensor);
-
-            if (defensor.getHpActual() <= 0){
-                break;
-            }
-            Pokemon temporal = atacante;
-            atacante = defensor;
-            defensor = temporal;
-        }
-
-    }
-
-
 }
