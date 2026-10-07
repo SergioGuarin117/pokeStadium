@@ -277,7 +277,7 @@ public class PokeStadiumGUI implements BattleListener {
         if (daño == 0){
             txtLog.append(atacante + " Fallo el ataque!\n");
         }else {
-            txtLog.append(atacante + " Ataca a" + defensor + " y causa "+ daño + (critico ? " ¡¡Critico!! " : "") + "\n");
+            txtLog.append(atacante + " Ataca a " + defensor + " y causa "+ daño + (critico ? " ¡¡Critico!! " : "") + "\n");
             txtLog.setCaretPosition(txtLog.getDocument().getLength());
         }
     }
