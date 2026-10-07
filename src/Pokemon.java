@@ -8,6 +8,8 @@ public class Pokemon{
     private Integer velocidad;
     private Integer hpActual;
 
+
+    // Datos de cada pokemon
     public Pokemon(String nombre, String tipos,String sprite,
                    int hp, int ataque, int defensa, int velocidad ){
 

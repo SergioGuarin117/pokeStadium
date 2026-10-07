@@ -9,6 +9,7 @@ public class Battle {
         this.listener = listener;
     }
 
+    // Se encarga de elegir cual pokemon tiene la iniciativa en la batalla
     public Pokemon IniciativaPokemon(Pokemon pokemon1, Pokemon pokemon2){
          if (pokemon1.getVelocidad()>pokemon2.getVelocidad()){
              return pokemon1;
@@ -18,7 +19,7 @@ public class Battle {
              return Math.random() < 0.5 ? pokemon1 : pokemon2;
          }
     }
-
+    // Es la encargada del daño de cada turno
     public int atacar(Pokemon atacante, Pokemon defensor) {
 
         double randomAtaque = Math.random();

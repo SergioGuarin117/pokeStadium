@@ -7,7 +7,7 @@ import java.net.http.HttpResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-
+    // Consulta del programa a la PokeAPI
 public class PokeApiClient {
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
@@ -29,6 +29,7 @@ public class PokeApiClient {
 
     }
 
+    // La respuesta de la PokeAPI Para traer los datos.
     public Pokemon consultarPokemon(String nombre)
         throws IOException, InterruptedException{
         JSONObject datos = new JSONObject(consultarRespuesta(nombre));
