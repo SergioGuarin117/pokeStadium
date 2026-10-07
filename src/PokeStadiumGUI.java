@@ -5,6 +5,9 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.awt.Color;
+import java.awt.Font;
+import java.util.Locale;
 
 public class PokeStadiumGUI implements BattleListener {
 
@@ -28,6 +31,7 @@ public class PokeStadiumGUI implements BattleListener {
     private JTextArea txtLog;
     private JButton btnCargar1;
     private JButton btnCargar2;
+    private JLabel pokeBattle;
 
     private final PokeApiClient apiClient = new PokeApiClient();
 
@@ -74,7 +78,7 @@ public class PokeStadiumGUI implements BattleListener {
     private void mostrarPokemon1(Pokemon cargado){
         this.pokemon1 = cargado;
         btnCombatir.setEnabled(pokemon1 != null && pokemon2 != null);
-        nombrePoke1.setText(cargado.getNombre());
+        nombrePoke1.setText(cargado.getNombre().toUpperCase(Locale.ROOT));
         barraVida1.setMaximum(cargado.getHp());
         barraVida1.setValue(cargado.getHpActual());
         barraVida1.setMaximum(cargado.getHp());
@@ -83,11 +87,12 @@ public class PokeStadiumGUI implements BattleListener {
 
 
         estadisticasPoke1.setText(
-                "<html>HP: "+ cargado.getHp()
-                +"<br>Ataque: "+ cargado.getAtaque()
-                +"<br>Defensa: "+ cargado.getDefensa()
-                +"<br>Velocidad: "+ cargado.getVelocidad()
-                +"</html>"
+                "<html><table cellpadding='2'>"
+                        + "<tr><td>HP:</td><td>" + cargado.getHp() + "</td></tr>"
+                        + "<tr><td>Ataque:</td><td>" + cargado.getAtaque() + "</td></tr>"
+                        + "<tr><td>Defensa:</td><td>" + cargado.getDefensa() + "</td></tr>"
+                        + "<tr><td>Velocidad:</td><td>" + cargado.getVelocidad() + "</td></tr>"
+                        + "</table></html>"
         );
 
         try {
@@ -105,7 +110,7 @@ public class PokeStadiumGUI implements BattleListener {
 
     private void mostrarPokemon2(Pokemon cargado){
         this.pokemon2 = cargado;
-        nombrePoke2.setText(cargado.getNombre());
+        nombrePoke2.setText(cargado.getNombre().toUpperCase(Locale.ROOT));
         barraVida2.setMaximum(cargado.getHp());
         barraVida2.setValue(cargado.getHpActual());
         btnCombatir.setEnabled(pokemon1 != null && pokemon2 != null);
@@ -114,11 +119,12 @@ public class PokeStadiumGUI implements BattleListener {
         actualizarColorVida(barraVida2);
 
         estadisticasPoke2.setText(
-                "<html>HP: "+ cargado.getHp()
-                        +"<br>Ataque: "+ cargado.getAtaque()
-                        +"<br>Defensa: "+ cargado.getDefensa()
-                        +"<br>Velocidad: "+ cargado.getVelocidad()
-                        +"</html>"
+                "<html><table cellpadding='2'>"
+                        + "<tr><td>HP:</td><td>" + cargado.getHp() + "</td></tr>"
+                        + "<tr><td>Ataque:</td><td>" + cargado.getAtaque() + "</td></tr>"
+                        + "<tr><td>Defensa:</td><td>" + cargado.getDefensa() + "</td></tr>"
+                        + "<tr><td>Velocidad:</td><td>" + cargado.getVelocidad() + "</td></tr>"
+                        + "</table></html>"
         );
 
         try {
@@ -189,6 +195,15 @@ public class PokeStadiumGUI implements BattleListener {
         btnCombatir.setText("¡Combatir!");
         btnCombatir.setEnabled(false);
         txtLog.setEditable(false);
+
+        pokeBattle.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+        txtLog.setBackground(new Color(255, 248, 220));
+        txtLog.setForeground(new Color(31, 41, 55));
+        txtLog.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        txtLog.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(24, 35, 54), 3),
+                BorderFactory.createEmptyBorder(8, 10, 8, 10)
+        ));
         btnCargar1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -224,17 +239,37 @@ public class PokeStadiumGUI implements BattleListener {
             }
         });
 
+        panel1.setBackground(new Color(24, 35, 54));
+        panelPokemon1.setBackground(new Color(215, 232, 255));
+        panelPokemon2.setBackground(new Color(255, 225, 220));
+        panelCentral.setBackground(new Color(238, 242, 250));
+        pokeBattle.setForeground(new Color(255, 215, 80));
+        pokeBattle.setFont(new Font("Press Start 2P", Font.PLAIN, 16));
+        //pokeBattle.setFont(new Font("SansSerif", Font.BOLD, 24));
+        btnCombatir.setBackground(new Color(220, 53, 69));
+        btnCombatir.setForeground(Color.WHITE);
+
+
     }
 
 
     public static void main(String[] args) {
 
-        JFrame frame = new JFrame("PokeStadiumGUI");
+        JFrame frame = new JFrame("POKESTADIUM");
         frame.setContentPane(new PokeStadiumGUI().panel1);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(650,500);
         frame.setLocationRelativeTo(null);
+        frame.setIconImage(new ImageIcon("pokeball.png").getImage());
+        URL iconUrl = PokeStadiumGUI.class.getResource("/pokeball.png");
+        if (iconUrl != null) {
+            frame.setIconImage(new ImageIcon(iconUrl).getImage());
+        } else {
+            System.out.println("No se encontró pokeball.png");
+        }
         frame.setVisible(true);
+
+
     }
 
     @Override
@@ -242,7 +277,7 @@ public class PokeStadiumGUI implements BattleListener {
         if (daño == 0){
             txtLog.append(atacante + " Fallo el ataque!\n");
         }else {
-            txtLog.append(atacante + " Ataca a" + defensor + " y causa "+ daño + (critico ? " ¡¡Critico!! ": "") + "\n");
+            txtLog.append(atacante + " Ataca a " + defensor + " y causa "+ daño + (critico ? " ¡¡Critico!! " : "") + "\n");
             txtLog.setCaretPosition(txtLog.getDocument().getLength());
         }
     }
