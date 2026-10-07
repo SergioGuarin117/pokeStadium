@@ -44,35 +44,61 @@ public class PokeStadiumGUI implements BattleListener {
 
     private void cargarPokemon1(){
         String nombre = txtNombre1.getText().trim();
-        if (nombre.isEmpty()){
-            txtLog.append("Escribe el nombre del pokemon 1. \n");
+        btnCargar1.setEnabled(false);
 
-        }
-        try {
-            Pokemon cargado = apiClient.consultarPokemon(nombre);
-            mostrarPokemon1(cargado);
-            txtNombre1.setText(cargado.getNombre());
-            txtLog.append("Pokemon 1 cargado: "+ cargado.getNombre()+"\n");
-        }catch (Exception e){
-            txtLog.append("No se pudo cargar el pokemon 1: "+ e.getMessage());
-        }
+        new SwingWorker<Pokemon, Void>() {
+            @Override
+            protected Pokemon doInBackground() throws Exception {
+                return apiClient.consultarPokemon(nombre);
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    Pokemon cargado = get();
+                    mostrarPokemon1(cargado);
+                    txtNombre1.setText(cargado.getNombre());
+                    txtLog.append("Pokemon 1 cargado: " + cargado.getNombre() + "\n");
+                } catch (Exception ex) {
+                    txtLog.append("No se pudo cargar el pokemon 1: "
+                            + ex.getMessage() + "\n");
+                } finally {
+                    btnCargar1.setEnabled(true);
+                }
+            }
+        }.execute();
 
     }
 
     private void cargarPokemon2(){
         String nombre = txtNombre2.getText().trim();
         if (nombre.isEmpty()){
-            txtLog.append("Escribe el nombre del pokemon 1. \n");
+            txtLog.append("Escribe el nombre del pokemon 2. \n");
 
         }
-        try {
-            Pokemon cargado = apiClient.consultarPokemon(nombre);
-            mostrarPokemon2(cargado);
-            txtNombre2.setText(cargado.getNombre());
-            txtLog.append("Pokemon 2 cargado: "+ cargado.getNombre()+"\n");
-        }catch (Exception e){
-            txtLog.append("No se pudo cargar el pokemon 2: "+ e.getMessage());
-        }
+        btnCargar2.setEnabled(false);
+
+        new SwingWorker<Pokemon, Void>() {
+            @Override
+            protected Pokemon doInBackground() throws Exception {
+                return apiClient.consultarPokemon(nombre);
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    Pokemon cargado = get();
+                    mostrarPokemon2(cargado);
+                    txtNombre2.setText(cargado.getNombre());
+                    txtLog.append("Pokemon 2 cargado: " + cargado.getNombre() + "\n");
+                } catch (Exception ex) {
+                    txtLog.append("No se pudo cargar el pokemon 2: "
+                            + ex.getMessage() + "\n");
+                } finally {
+                    btnCargar2.setEnabled(true);
+                }
+            }
+        }.execute();
     }
 
     private void mostrarPokemon1(Pokemon cargado){
